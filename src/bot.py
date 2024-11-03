@@ -19,8 +19,6 @@ async def cmd_start(message: types.Message):
 async def cmd_start(message: types.Message):
     await message.answer("OK! Let me know at what date do You want to meet!\nWrite it in format DD-MM")
     date_str = message.text
-    if IsDateValid(date_str):
-
     try:
         date_obj = datetime.strptime(date_str, "%d-%m-%Y")
         await message.reply(date_obj.strftime("%d-%m-%Y"))
