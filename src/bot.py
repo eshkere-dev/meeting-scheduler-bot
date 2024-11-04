@@ -3,12 +3,13 @@ import logging
 import datetime
 import timeManager as tm
 import databaseManager as db
+import bot_config as cfg
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
 logging.basicConfig(level=logging.INFO)
 # Объект бота
-bot = Bot(token="6785842829:AAFHVBy_AOseywFfBx6uNxPdOhSHuL7frIA")
+bot = cfg.bot_create()
 # Диспетчер
 dp = Dispatcher()
 
@@ -29,10 +30,21 @@ def date_formatter(date_str):
     res.append(date)
     res.append(time)
     return res
+
 # Хэндлер на команду /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     await message.answer("Hello! I am meeting creator bot, let me help you!")
+    id=message.from_user.id
+    alias=message.from_user.username
+    db.add_meeting(id, alias)
+
+#Хэндлер на команду /delete_user
+@dp.message(Command("delete_user"))
+async def cmd_delete(message: types.Message):
+    id = message.from_user.id
+    db.delete_user(id)
+    await message.answer("Deleted user!")
 
 # Хээндлер на команду /new_meeting
 @dp.message(Command("new_meeting"))
@@ -50,11 +62,14 @@ async def cmd_new_meeting(message: types.Message):
         await message.answer("Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
     if tm.is_date_valid(date) and tm.is_time_valid(time):
         if tm.is_data_available(fullDate):
-            db.add_meeting(fullDate, aliases)
+            await message.answer("Enter some details about meeting.")
+            details = message.text
+            db.add_meeting(fullDate, aliases,details )
         else:
             await message.answer("Sorry, this time is not available.")
     else:
         await message.answer("Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
+
 #Хэндлер на /delete_meeting
 @dp.message((Command("delete_meeting")))
 async def cmd_delete_meeting(message: types.Message):
@@ -76,7 +91,8 @@ async def cmd_delete_meeting(message: types.Message):
     else:
         await message.answer(
             "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-# Запуск процесса поллинга новых апдейтов
+
+# Хэндлер на команду /my_meetings
 @dp.message((Command("my_meetings")))
 async def cmd_my_meetings(message: types.Message):
     meetings=db.get_users_meetings(message.from_user.username)
@@ -85,8 +101,10 @@ async def cmd_my_meetings(message: types.Message):
     else:
         meetings_str=meetings_to_str(meetings)
         await message.answer("Here are Your meetings:\n",meetings_str)
+
 async def main():
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
