@@ -6,9 +6,15 @@ import random
 def create_meeting(name: str = '') -> str:
 
     name_no_whitespaces = name.replace(" ", "")
-    url = ''
+    name_no_whitespaces = name_no_whitespaces.lower()
 
-    if name_no_whitespaces == '':
+    if len(name_no_whitespaces) > 30 or len(name_no_whitespaces) < 4:
+        name_no_whitespaces = ''
+    elif len(name_no_whitespaces) < 12:
+        for _ in range(3):
+            name_no_whitespaces += random.choice(config.DIGITS_ALPHABET)
+    url = ''
+    if name_no_whitespaces != '':
         url = f"{config.MEETING_SERVICE_URL}{name_no_whitespaces}"
     else:
         name = generate_meeting_name()
@@ -36,3 +42,4 @@ def generate_meeting_name():
         return generate_meeting_name()
     else:
         return name
+
