@@ -48,8 +48,8 @@ async def cmd_new_meeting(message: types.Message):
         time=fullDate[1]
     else:
         await message.answer("Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-    if tm.IsDateValid(date) and tm.IsTimeValid(time):
-        if tm.IsDataAvailable(fullDate):
+    if tm.is_date_valid(date) and tm.is_time_valid(time):
+        if tm.is_data_available(fullDate):
             db.add_meeting(fullDate, aliases)
         else:
             await message.answer("Sorry, this time is not available.")
@@ -68,8 +68,8 @@ async def cmd_delete_meeting(message: types.Message):
     else:
         await message.answer(
             "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-    if tm.IsDateValid(date) and tm.IsTimeValid(time):
-        if not tm.IsDataAvailable(fullDate):
+    if tm.is_date_valid(date) and tm.is_time_valid(time):
+        if not tm.is_data_available(fullDate):
             db.delete_meeting(fullDate)
         else:
             await message.answer("Sorry, there is no such meeting.")
