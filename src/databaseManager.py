@@ -1,3 +1,5 @@
+
+
 #Принимает в себя dateArray[date,time] и array алиасов
 def add_meeting(dateArray,aliases):
     return 1
@@ -8,3 +10,5 @@ def delete_meeting(dateArray):
 def get_users_meetings(alias):
     meetings=[]
     return meetings
+def name_exists(meeting_name) -> bool:
+    return False
