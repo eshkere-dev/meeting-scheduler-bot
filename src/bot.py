@@ -3,7 +3,7 @@ import logging
 import datetime
 import timeManager as tm
 import databaseManager as db
-import bot_config as cfg
+from config import bot_config as cfg
 import meetingManager as mm
 
 from aiogram import Dispatcher, types
