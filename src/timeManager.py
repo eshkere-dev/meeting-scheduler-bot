@@ -29,7 +29,7 @@ def is_data_available(dateArray):
     dt = datetime.strptime(date_string, "%d.%m %H:%M")
     dt -= timedelta(hours=3)
     unix_time = int(dt.timestamp())
-    current_time = time.time() + 10800
+    current_time = time.time()
     time_difference = current_time - unix_time
     if 300 < time_difference < 604800:
         return True
@@ -48,7 +48,21 @@ def to_unix_from_time(time_str):
 def to_unix_from_date(date_str):
     now = datetime.now()
     current_year = now.year
-    dt = datetime.strptime(date_str, f'%d-%m %H:%M').replace(year=current_year)
+    dt = datetime.strptime(date_str, f'%d.%m %H:%M').replace(year=current_year)
     dt -= timedelta(hours=3)
     unix_time = int(time.mktime(dt.timetuple()))
     return unix_time
+
+
+def to_unix(date_string, date_format="%d.%m %H:%M"):
+    dt = datetime.strptime(date_string, date_format)
+    dt -= timedelta(hours=3)
+    unix_time = int(dt.timestamp())
+    return unix_time
+
+
+def to_date(unix_time, date_format="%d.%m %H:%M"):
+    dt = datetime.fromtimestamp(unix_time)
+    dt -= timedelta(hours=3)
+    formatted_date = dt.strftime(date_format)
+    return formatted_date
