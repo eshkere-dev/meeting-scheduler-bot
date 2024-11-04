@@ -3,9 +3,10 @@ import logging
 import datetime
 import timeManager as tm
 import databaseManager as db
-import bot_config as cfg
+from config import bot_config as cfg
+import meetingManager as mm
 
-from aiogram import Bot, Dispatcher, types
+from aiogram import Dispatcher, types
 from aiogram.filters.command import Command
 logging.basicConfig(level=logging.INFO)
 # Объект бота
@@ -25,7 +26,8 @@ def date_formatter(date_str):
         time=date_str[1]
     if len(date_str)==1:
         time=date_str[0]
-        date=datetime.date.now.strftime("%m-%d")
+        date=datetime.date.today()
+        print(date)
     else: return res
     res.append(date)
     res.append(time)
@@ -37,7 +39,7 @@ async def cmd_start(message: types.Message):
     await message.answer("Hello! I am meeting creator bot, let me help you!")
     id=message.from_user.id
     alias=message.from_user.username
-    db.add_meeting(id, alias)
+    db.add_user(id, alias)
 
 #Хэндлер на команду /delete_user
 @dp.message(Command("delete_user"))
@@ -46,12 +48,14 @@ async def cmd_delete(message: types.Message):
     db.delete_user(id)
     await message.answer("Deleted user!")
 
-# Хээндлер на команду /new_meeting
-@dp.message(Command("new_meeting"))
+# Хээндлер на команду /meet
+@dp.message(Command("meet"))
 async def cmd_new_meeting(message: types.Message):
     fullDate=[]
     await message.answer("Write down aliases of members.")
+    await set.set
     aliases=message.text.split(" ")
+
     await message.answer("OK! Let me know at what date do You want to meet!\nWrite it in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
     date_str=message.text.split()
     fullDate=date_formatter(date_str)
@@ -64,7 +68,11 @@ async def cmd_new_meeting(message: types.Message):
         if tm.is_data_available(fullDate):
             await message.answer("Enter some details about meeting.")
             details = message.text
-            db.add_meeting(fullDate, aliases,details )
+            db.add_meeting(fullDate, aliases,details)
+            await message.answer("Give short discription about meeting 5-30 simbols.")
+            discription = message.text
+            url=mm.create_meeting(discription)
+            await message.answer(f"Your meeting is successfully created!\nHere is link to your meeting:{url}")
         else:
             await message.answer("Sorry, this time is not available.")
     else:
