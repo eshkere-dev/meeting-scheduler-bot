@@ -156,11 +156,13 @@ def get_description(message):
     if len(description)>=5 and len(description) <=30:
         url = mm.create_meeting(description)
         aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
-        meeting_temp_dict[message.chat.id]["creator_id"] = db.get_id_by_alias(meeting_temp_dict[message.chat.id]["CreatorAlias"])
+        CreatorAlias = "@".join(meeting_temp_dict[message.chat.id]["creatorAlias"])
+        meeting_temp_dict[message.chat.id]["creator_id"] = db.get_id_by_alias(CreatorAlias)
         if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
                           meeting_temp_dict[message.chat.id]["aliases"],
                           meeting_temp_dict[message.chat.id]["description"],
-                          url,meeting_temp_dict[message.chat.id]["creator_id"]):
+                          url,
+                          meeting_temp_dict[message.chat.id]["creator_id"]):
             bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
                                               f"Date: {tm.to_date(meeting_temp_dict[message.chat.id]['date'])}, \n"
                                               f"Aliases of members: {aliases_string}, \n"
