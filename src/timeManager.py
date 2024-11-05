@@ -3,10 +3,13 @@ import time
 
 #Проверка правильности ввода даты
 def is_date_valid(date_str: str) -> bool:
-    day, month = date_str.split('.')
+    date_str= date_str.split('.')
+    day=date_str[0]
+    month=date_str[1]
     if month in ['1', '3', '5', '7', '8', '10', '12']:
         if 0 < int(day) < 32:
             return True
+
         else:
             return False
     elif month in ['4', '6', '9', '11']:
@@ -30,7 +33,6 @@ def is_time_valid(time_str: str) -> bool:
 def is_data_available(dateArray):
     date_string = " ".join(dateArray)
     dt = datetime.strptime(date_string, "%d.%m %H:%M")
-    dt -= timedelta(hours=3)
     unix_time = int(dt.timestamp())
     current_time = time.time()
     time_difference = current_time - unix_time
@@ -42,7 +44,6 @@ def is_data_available(dateArray):
 def to_unix_from_time(time_str):
     today = datetime.now().date()
     dt = datetime.strptime(time_str, '%H:%M').replace(year=today.year, month=today.month, day=today.day)
-    dt -= timedelta(hours=3)
     unix_time = int(time.mktime(dt.timetuple()))
     return unix_time
 
@@ -52,20 +53,17 @@ def to_unix_from_date(date_str):
     now = datetime.now()
     current_year = now.year
     dt = datetime.strptime(date_str, f'%d.%m %H:%M').replace(year=current_year)
-    dt -= timedelta(hours=3)
     unix_time = int(time.mktime(dt.timetuple()))
     return unix_time
 
 
 def to_unix(date_string, date_format="%d.%m %H:%M"):
     dt = datetime.strptime(date_string, date_format)
-    dt -= timedelta(hours=3)
     unix_time = int(dt.timestamp())
     return unix_time
 
 
 def to_date(unix_time, date_format="%d.%m %H:%M"):
     dt = datetime.fromtimestamp(unix_time)
-    dt -= timedelta(hours=3)
     formatted_date = dt.strftime(date_format)
     return formatted_date
