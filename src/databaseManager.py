@@ -17,7 +17,7 @@ def add_meeting(unixDate, aliases, details, url, creator_id) -> bool:
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO meetings (creator_id, time, description, link_to_meeting, aliases) VALUES (%s, %s, %s, %s, %s)",
+            "INSERT INTO meetings (creator_id, aliases, time, description, link_to_meeting) VALUES (%s, %s, %s, %s, %s)",
             (creator_id, aliases, unixDate, details, url) # TODO: add aliases column
         )
         conn.commit()
