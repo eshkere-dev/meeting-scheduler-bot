@@ -9,6 +9,7 @@ def is_date_valid(date_str: str) -> bool:
     if month in ['1', '3', '5', '7', '8', '10', '12']:
         if 0 < int(day) < 32:
             return True
+
         else:
             return False
     elif month in ['4', '6', '9', '11']:
