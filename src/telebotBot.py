@@ -9,7 +9,7 @@ import meetingManager as mm
 import telebot
 from config.bot_config import TOKEN
 
-bot = telebot.TeleBot(token="TOKEN")
+bot = telebot.TeleBot(token=TOKEN)
 meeting_temp_dict = dict()
 
 
