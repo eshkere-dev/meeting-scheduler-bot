@@ -138,3 +138,24 @@ def get_meeting_creator_id(meeting_url: str) -> int:
     finally:
         cursor.close()
         conn.close()
+
+
+def get_id_by_alias(alias: str) -> int:
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT id FROM users WHERE alias = %s", (alias,))
+        row = cursor.fetchone()
+
+        if row is not None:
+            return row[0]
+        else:
+            return 0
+    except Exception as e:
+        print(f"Error fetching user ID by alias: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
