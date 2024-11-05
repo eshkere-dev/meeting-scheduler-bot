@@ -8,7 +8,7 @@ CREATE TABLE meetings (
     meeting_id SERIAL PRIMARY KEY,
     creator_id BIGINT,
     aliases VARCHAR(1000) NOT NULL,
-    time BIGINT,
+    time VARCHAR(1000),
     description TEXT,
     link_to_meeting VARCHAR(500) NOT NULL
 );
