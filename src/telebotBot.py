@@ -24,7 +24,7 @@ def date_formatter(date_str):
     if len(date_str) == 2:
         date = date_str[0]
         time = date_str[1]
-    if len(date_str) == 1:
+    elif len(date_str) == 1:
         time = date_str[0]
         date = datetime.date.today().strftime("%d.%m")
     else:
@@ -101,7 +101,6 @@ def get_date(message):
 
     date_str = message.text.split()
     fullDate = date_formatter(date_str)
-
     if len(fullDate) == 2:
         date = fullDate[0]
         time = fullDate[1]
@@ -136,20 +135,25 @@ def get_date(message):
 def get_description(message):
     description = message.text
     meeting_temp_dict[message.chat.id]["description"] = description
-    url = mm.create_meeting(description)
-    aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
-    if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
-                      meeting_temp_dict[message.chat.id]["aliases"],
-                      meeting_temp_dict[message.chat.id]["description"],
-                      url):
-        bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
-                                          f"Date: {meeting_temp_dict[message.chat.id]['date']}, \n"
-                                          f"Aliases of members: {aliases_string}, \n"
-                                          f"Url: {url}")
-    else:
-        bot.send_message(message.chat.id, "Oops! Try again later")
+    if len(description)>=5 and len(description) <=30:
+        url = mm.create_meeting(description)
+        aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
+        if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
+                          meeting_temp_dict[message.chat.id]["aliases"],
+                          meeting_temp_dict[message.chat.id]["description"],
+                          url):
+            bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
+                                              f"Date: {meeting_temp_dict[message.chat.id]['date']}, \n"
+                                              f"Aliases of members: {aliases_string}, \n"
+                                              f"Url: {url}")
+        else:
+            bot.send_message(message.chat.id, "Oops! Try again later")
 
-    del meeting_temp_dict[message.chat.id]
+        del meeting_temp_dict[message.chat.id]
+    else:
+        bot.send_message(message.chat.id,"Please enter a valid description for your meeting \n")
+        bot.register_next_step_handler(message, get_description)
+        return
 
 
 # Хэндлер на команду /new_meeting
@@ -192,7 +196,7 @@ def cmd_my_meetings(message):
     else:
         meetings_str = meetings_to_str(meetings)
         bot.send_message(message.chat.id, "Here are Your meetings:\n", meetings_str)
-@bot.message_handler(commands=['help', "info", "get_info"])
+@bot.message_handler(commands=["inst","help", "info", "get_info"])
 def cmd_info(message):
     bot.send_message(message.chat.id, "/meet - create new meeting\n "
                                       "/my_meetings - get all your meetings\n "
