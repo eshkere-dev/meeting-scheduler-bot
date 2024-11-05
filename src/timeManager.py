@@ -3,7 +3,9 @@ import time
 
 #Проверка правильности ввода даты
 def is_date_valid(date_str: str) -> bool:
-    day, month = date_str.split('.')
+    date_str= date_str.split('.')
+    day=date_str[0]
+    month=date_str[1]
     if month in ['1', '3', '5', '7', '8', '10', '12']:
         if 0 < int(day) < 32:
             return True

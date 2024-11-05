@@ -3,7 +3,6 @@ import logging
 import datetime
 import timeManager as tm
 import databaseManager as db
-# import bot_config as cfg
 import meetingManager as mm
 
 from aiogram import Bot, Dispatcher, types
@@ -11,7 +10,7 @@ from aiogram.filters.command import Command
 
 import telebot
 
-bot = telebot.TeleBot(token="6785842829:AAFHVBy_AOseywFfBx6uNxPdOhSHuL7frIA")
+bot = telebot.TeleBot(token="6785842829:AAEzJjOKCXCk2DIcWCRSTCj3RNdM8UW_0yA")
 meeting_temp_dict = dict()
 
 
@@ -29,7 +28,7 @@ def date_formatter(date_str):
         time = date_str[1]
     if len(date_str) == 1:
         time = date_str[0]
-        date = datetime.date.now.strftime("%m-%d")
+        date = datetime.date.today().strftime("%d.%m")
     else:
         return res
     res.append(date)
@@ -81,7 +80,7 @@ def get_aliases(message):
     meeting_temp_dict[message.chat.id]["aliases"] = aliases
     bot.send_message(message.chat.id, "OK! Let me know at what date do You want to meet! \n\n"
                                       "Write it in one of the following formats: \n"
-                                      "1. Day-Month Hour:Minute \n"
+                                      "1. Day.Month Hour:Minute \n"
                                       "2. Hour:Minute if meeting is today\n"
                                       "<u>Important note: "
                                       "Meeting must be more than 5 minutes and less than 7 days farther.</u>",
@@ -102,6 +101,9 @@ def get_date(message):
     if len(fullDate) == 2:
         date = fullDate[0]
         time = fullDate[1]
+    elif len(fullDate) == 1:
+        date=datetime.date.today().strftime("%d.%m")
+        time=fullDate[0]
     else:
         bot.send_message(message.chat.id,
                          "Please enter time in one of the possible formats or use /cancel to cancel. "
@@ -166,7 +168,8 @@ def cmd_delete_meeting(message):
     fullDate = []
     date_str = message.text.split()
     fullDate = date_formatter(date_str)
-
+    date=-1
+    time=-1
     if len(fullDate) != 0:
         date = fullDate[0]
         time = fullDate[1]
@@ -185,7 +188,7 @@ def cmd_delete_meeting(message):
 
 
 # Хэндлер на команду /my_meetings
-@bot.send_message(commands=['my_meetings', "my_meets", "meetings"])
+@bot.message_handler(commands=['my_meetings', "my_meets", "meetings"])
 def cmd_my_meetings(message):
     meetings = db.get_users_meetings(message.from_user.username)
     if len(meetings) == 0:
@@ -196,6 +199,3 @@ def cmd_my_meetings(message):
 
 
 bot.infinity_polling()
-
-if __name__ == "__main__":
-    asyncio.run(main())
