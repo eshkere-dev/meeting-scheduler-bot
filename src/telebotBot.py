@@ -134,7 +134,7 @@ def get_description(message):
     aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
     if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
                       meeting_temp_dict[message.chat.id]["aliases"],
-                      meeting_temp_dict[message.chat.id]["details"],
+                      meeting_temp_dict[message.chat.id]["description"],
                       url):
         bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
                                           f"Date: {meeting_temp_dict[message.chat.id]['date']}, \n"
@@ -159,9 +159,26 @@ def new_meeting(message):
 
 #Хэндлер на /delete_meeting
 #TODO: Rework delete_meeting
+def meeting_deleter(message):
+
+    meeting_url = message.text
+    if not(meeting_url.startswith("meet.jit.si/")):
+        bot.send_message(message.chat.id, "Incorrect url provided")
+
+    if db.get_meeting_creator_id == message.chat.id and db.meeting_exist_by_url(meeting_url):
+        if db.delete_meeting_by_url(meeting_url):
+            bot.send_message(message.chat.id, "Deleted succesfully")
+        else:
+            bot.send_message(message.chat.id, "Try again later")
+
+
+
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
 def cmd_delete_meeting(message):
- pass
+    bot.send_message(message.chat.id,
+                     "If you want to delete meeting, send me its url in form: meet.jit.si/example-of-meeting")
+    bot.register_next_step_handler(message, meeting_deleter)
+
 
 # Хэндлер на команду /my_meetings
 @bot.message_handler(commands=['my_meetings', "my_meets", "meetings"])
@@ -172,6 +189,8 @@ def cmd_my_meetings(message):
     else:
         meetings_str = meetings_to_str(meetings)
         bot.send_message(message.chat.id, "Here are Your meetings:\n", meetings_str)
-
+@bot.message_handler(commands=['help', "info", "get_info"])
+def cmd_info(message):
+    bot.send_message(message.chat.id, "/meet - create neew meeting\n/my_meetings - get all your meetings\n/delete_meeting - delete your meeting\n/delete_user - delete your account from our base\n/help - get this help message")
 
 bot.infinity_polling()
