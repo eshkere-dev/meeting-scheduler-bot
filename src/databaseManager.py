@@ -11,7 +11,7 @@ def delete_user(id) -> bool:
     return True
 def add_user(id,alias) -> bool:
     return True
-def name_exists(meeting_name) -> bool:
+def meeting_url_exists(meeting_name) -> bool:
     return False
 def user_exists(alias: str) -> bool:
     return True

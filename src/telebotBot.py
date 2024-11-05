@@ -77,7 +77,13 @@ def get_aliases(message):
             if db.user_exists(alias):
                pass
             else:
-                bot.send_message(message.chat.id, "xyi")
+                bot.send_message(message.chat.id, f"User {alias} do not exist in our base. \n"
+                                                  f"Advise him to register by using /start")
+                del meeting_temp_dict[message.chat.id]
+                return
+        else:
+            bot.send_message(message.chat.id, "Please type usernames of the participants in following format. \n"
+                                              "Example: @first_user @second_user @third_user")
 
     #TODO: make_validity_checker for aliases
 
