@@ -1,7 +1,7 @@
 
 
 #Принимает в себя dateArray[date,time] и array алиасов
-def add_meeting(dateArray,aliases, details, url) -> bool:
+def add_meeting(unixDate,aliases, details, url) -> bool:
     return 1
 #Принимает алиас в строке, возвращает список строк полных дат митов в формате дд-мм чч:мм
 def get_users_meetings(alias: str) -> list:
