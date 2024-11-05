@@ -16,12 +16,13 @@ meeting_temp_dict = dict()
 def meetings_to_str(meetings):
     meetings_str = ""
     for meeting in meetings:
-        meetings_str += f"{meeting}\n"
+        meeting=int(meeting)
+        meetings_str += f"{tm.to_date(meeting,"%d.%m %H:%M")}\n"
     return meetings_str
 
 def send_add_notification(aliasArray,CreatorAlias : str,date: str):
     for alias in aliasArray:
-        bot.send_message(db.get_id_by_alias(alias),f"You were invited to join meeting at {date} by {CreatorAlias}")
+        bot.send_message(db.get_id_by_alias("@"+alias),f"You were invited to join meeting at {date} by {CreatorAlias}")
 
 def date_formatter(date_str):
     res = []
@@ -198,6 +199,7 @@ def meeting_deleter(message):
 
     if db.get_meeting_creator_id == message.chat.id and db.meeting_url_exists(meeting_url):
         if db.delete_meeting_by_url(meeting_url):
+            db.delete_meeting_by_url(meeting_url)
             bot.send_message(message.chat.id, "Deleted succesfully")
         else:
             bot.send_message(message.chat.id, "Try again later")
@@ -206,7 +208,7 @@ def meeting_deleter(message):
 
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
 def cmd_delete_meeting(message):
-    meetings = db.get_users_meetings(message.from_user.username)
+    meetings = db.get_users_meetings(db.get_id_by_alias("@"+message.from_user.username))
     if len(meetings) == 0:
         bot.send_message(message.chat.id, "Sorry, it seems that You do not have any meetings.")
     else:
@@ -218,12 +220,12 @@ def cmd_delete_meeting(message):
 # Хэндлер на команду /my_meetings
 @bot.message_handler(commands=['my_meetings', "my_meets", "meetings"])
 def cmd_my_meetings(message):
-    meetings = db.get_users_meetings(db.get_id_by_alias(message.from_user.username))
+    meetings = db.get_users_meetings(db.get_id_by_alias("@"+message.from_user.username))
     if len(meetings) == 0:
         bot.send_message(message.chat.id, "Sorry, it seems that You do not have any meetings.")
     else:
         meetings_str = meetings_to_str(meetings)
-        bot.send_message(message.chat.id, "Here are Your meetings:\n", meetings_str)
+        bot.send_message(message.chat.id, f"Here are Your meetings:\n {meetings_str}")
 @bot.message_handler(commands=["inst","help", "info", "get_info"])
 def cmd_info(message):
     bot.send_message(message.chat.id, "/meet - create new meeting\n "
