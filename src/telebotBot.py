@@ -19,6 +19,9 @@ def meetings_to_str(meetings):
         meetings_str += f"{meeting}\n"
     return meetings_str
 
+def send_add_notification(aliasArray,CreatorAlias : str,date: str):
+    for alias in aliasArray:
+        bot.send_message(db.get_id_by_alias(alias),f"You were invited to join meeting at {date} by {CreatorAlias}")
 
 def date_formatter(date_str):
     res = []
@@ -79,7 +82,9 @@ def get_aliases(message):
     aliases = message.text.split(" ")
     for alias in aliases:
         if alias.startswith("@") and not("," in alias):
-            if db.user_exists(alias):
+            if alias == meeting_temp_dict[message.chat.id]["CreatorAlias"]:
+                continue
+            elif db.user_exists(alias):
                pass
             else:
                 bot.send_message(message.chat.id, f"User {alias} do not exist in our base. \n"
@@ -174,7 +179,9 @@ def new_meeting(message):
     meeting_temp_dict.update({message.chat.id: {"aliases": [],
                                                 "date": [],
                                                 "description": ""}})
-    bot.send_message(message.chat.id, "Write down aliases of members you want to see on your meeting")
+    bot.send_message(message.chat.id, "Write down aliases of other members you want to see on your meeting")
+    CreatorAlias=message.from_user.username
+    meeting_temp_dict[message.chat.id]["CreatorAlias"] = CreatorAlias
     bot.register_next_step_handler(message, get_aliases)
     return
 
