@@ -147,7 +147,7 @@ def get_id_by_alias(alias: str) -> int:
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT id FROM users WHERE alias = %s", (alias,))
+        cursor.execute("SELECT user_id FROM users WHERE alias = %s", (alias,))
         row = cursor.fetchone()
 
         if row is not None:
