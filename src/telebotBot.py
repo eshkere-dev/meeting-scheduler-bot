@@ -72,6 +72,12 @@ def unreg(message):
 
 def get_aliases(message):
     aliases = message.text.split(" ")
+    for alias in aliases:
+        if alias.startswith("@") and not("," in alias):
+            if db.user_exists(alias):
+               pass
+            else:
+                bot.send_message(message.chat.id, "xyi")
 
     #TODO: make_validity_checker for aliases
 
@@ -146,7 +152,7 @@ def get_description(message):
     del meeting_temp_dict[message.chat.id]
 
 
-# Хээндлер на команду /new_meeting
+# Хэндлер на команду /new_meeting
 @bot.message_handler(commands=["meet", "new_meeting", "create_meeting"])
 def new_meeting(message):
     meeting_temp_dict.update({message.chat.id: {"aliases": [],
@@ -156,9 +162,6 @@ def new_meeting(message):
     bot.register_next_step_handler(message, get_aliases)
     return
 
-
-#Хэндлер на /delete_meeting
-#TODO: Rework delete_meeting
 def meeting_deleter(message):
 
     meeting_url = message.text
