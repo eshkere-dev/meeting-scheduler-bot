@@ -5,8 +5,6 @@ import timeManager as tm
 import databaseManager as db
 import meetingManager as mm
 
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters.command import Command
 
 import telebot
 
@@ -81,7 +79,7 @@ def get_aliases(message):
     bot.send_message(message.chat.id, "OK! Let me know at what date do You want to meet! \n\n"
                                       "Write it in one of the following formats: \n"
                                       "1. Day.Month Hour:Minute \n"
-                                      "2. Hour:Minute if meeting is today\n"
+                                      "2. Hour:Minute (if meeting is today)\n"
                                       "<u>Important note: "
                                       "Meeting must be more than 5 minutes and less than 7 days farther.</u>",
                      parse_mode="HTML")
@@ -163,29 +161,7 @@ def new_meeting(message):
 #TODO: Rework delete_meeting
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
 def cmd_delete_meeting(message):
-    bot.send_message(message.chat.id,
-                     "Please enter a date in format Day-Month Hour-Minute or Hour-Minute if meeting is today to delete it.")
-    fullDate = []
-    date_str = message.text.split()
-    fullDate = date_formatter(date_str)
-    date=-1
-    time=-1
-    if len(fullDate) != 0:
-        date = fullDate[0]
-        time = fullDate[1]
-    else:
-        bot.send_message(message.chat.id,
-                         "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-
-    if tm.is_date_valid(date) and tm.is_time_valid(time):
-        if not tm.is_data_available(fullDate):
-            db.delete_meeting(fullDate)
-        else:
-            bot.send_message(message.chat.id, "Sorry, there is no such meeting.")
-    else:
-        bot.send_message(message.chat.id,
-                         "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-
+ pass
 
 # Хэндлер на команду /my_meetings
 @bot.message_handler(commands=['my_meetings', "my_meets", "meetings"])
