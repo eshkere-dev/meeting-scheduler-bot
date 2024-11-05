@@ -72,6 +72,10 @@ def unreg(message):
 
 
 def get_aliases(message):
+    if message.text == "/cancel":
+        del meeting_temp_dict[message.chat.id]
+        bot.send_message(message.chat.id, "Canceled.")
+        return
     aliases = message.text.split(" ")
     for alias in aliases:
         if alias.startswith("@") and not("," in alias):
@@ -79,14 +83,15 @@ def get_aliases(message):
                pass
             else:
                 bot.send_message(message.chat.id, f"User {alias} do not exist in our base. \n"
-                                                  f"Advise him to register by using /start")
+                                                  f"Advise him to join us by using /start")
                 del meeting_temp_dict[message.chat.id]
                 return
         else:
             bot.send_message(message.chat.id, "Please type usernames of the participants in following format. \n"
+                                              "Type /cancel to cancel"
                                               "Example: @first_user @second_user @third_user")
-
-    #TODO: make_validity_checker for aliases
+            bot.register_next_step_handler(message, get_aliases)
+            return
 
     meeting_temp_dict[message.chat.id]["aliases"] = aliases
     bot.send_message(message.chat.id, "OK! Let me know at what date do You want to meet! \n\n"
