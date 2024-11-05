@@ -30,12 +30,12 @@ def add_meeting(unixDate, aliases, details, url, creator_id) -> bool:
         conn.close()
 
 # Get user's meetings
-def get_users_meetings(alias: str) -> list:
+def get_users_meetings(user_id: int) -> list:
     conn = get_connection()
     cursor = conn.cursor()
     meetings = []
     try:
-        cursor.execute("SELECT time FROM meetings WHERE creator_id = %s", (alias,))
+        cursor.execute("SELECT time FROM meetings WHERE user_id = %d", (user_id,))
         rows = cursor.fetchall()
         meetings = [row[0] for row in rows]
         return meetings
