@@ -218,7 +218,7 @@ def cmd_delete_meeting(message):
 # Хэндлер на команду /my_meetings
 @bot.message_handler(commands=['my_meetings', "my_meets", "meetings"])
 def cmd_my_meetings(message):
-    meetings = db.get_users_meetings(message.from_user.username)
+    meetings = db.get_users_meetings(db.get_id_by_alias(message.from_user.username))
     if len(meetings) == 0:
         bot.send_message(message.chat.id, "Sorry, it seems that You do not have any meetings.")
     else:
