@@ -3,7 +3,7 @@ import logging
 import datetime
 import timeManager as tm
 import databaseManager as db
-import bot_config as cfg
+import config.bot_config as cfg
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
@@ -26,7 +26,7 @@ def date_formatter(date_str):
         time=date_str[1]
     if len(date_str)==1:
         time=date_str[0]
-        date=datetime.date.now.strftime("%m-%d")
+        date=datetime.date.today().strftime("%d-%m")
     else: return res
     res.append(date)
     res.append(time)
@@ -78,9 +78,10 @@ def new_meeting(message):
 
     fullDate=[]
     bot.send_message(message.chat.id, "Write down aliases of members.")
-    bot.register_next_step_handler(message, )
+    bot.register_next_step_handler(message)
     aliases=message.text.split(" ")
     bot.send_message(message.chat.id, "OK! Let me know at what date do You want to meet!\nWrite it in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
+    bot.register_next_step_handler(message)
     date_str=message.text.split()
     fullDate=date_formatter(date_str)
     if len(fullDate)!=0:
@@ -91,6 +92,7 @@ def new_meeting(message):
     if tm.is_date_valid(date) and tm.is_time_valid(time):
         if tm.is_data_available(fullDate):
             bot.send_message(message.chat.id, "Enter some details about meeting.")
+            bot.register_next_step_handler(message)
             details = message.text
             db.add_meeting(fullDate, aliases,details )
         else:
@@ -135,7 +137,3 @@ def cmd_my_meetings(message: types.Message):
         bot.send_message(message.chat.id, "Here are Your meetings:\n",meetings_str)
 
 bot.infinity_polling()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
