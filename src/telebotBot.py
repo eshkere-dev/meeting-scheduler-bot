@@ -194,6 +194,10 @@ def cmd_my_meetings(message):
         bot.send_message(message.chat.id, "Here are Your meetings:\n", meetings_str)
 @bot.message_handler(commands=['help', "info", "get_info"])
 def cmd_info(message):
-    bot.send_message(message.chat.id, "/meet - create neew meeting\n/my_meetings - get all your meetings\n/delete_meeting - delete your meeting\n/delete_user - delete your account from our base\n/help - get this help message")
+    bot.send_message(message.chat.id, "/meet - create new meeting\n "
+                                      "/my_meetings - get all your meetings\n "
+                                      "/delete_meeting - delete your meeting\n "
+                                      "/unreg - delete your account from our base\n "
+                                      "/help - get this help message")
 
 bot.infinity_polling()
