@@ -2,26 +2,29 @@ from datetime import datetime, timedelta
 import time
 
 #Проверка правильности ввода даты
-def is_date_valid(date_str:str) -> bool:
-    unix_time = to_unix_from_date(date_str)
-    current_time = time.time()
-    time_difference = unix_time - current_time
-    # Проверяем условия: больше 5 минут (300 секунд) и меньше 7 дней (604800 секунд)
-    if 300 < time_difference < 604800:
-        return True
+def is_date_valid(date_str: str) -> bool:
+    day, month = date_str.split('.')
+    if month in ['1', '3', '5', '7', '8', '10', '12']:
+        if 0 < int(day) < 32:
+            return True
+        else:
+            return False
+    elif month in ['4', '6', '9', '11']:
+        if 0 < int(day) < 31:
+            return True
+        else:
+            return False
+    elif month == '2':
+        if 0 < int(day) < 29:
+            return True
     return False
 
 
-#Проверка правильности ввода времени
-def is_time_valid(time_str:str) -> bool:
-    unix_time = to_unix_from_time(time_str)
-    current_time = time.time()
-    time_difference = unix_time - current_time
-    # Проверяем условия: больше 5 минут (300 секунд) и меньше 7 дней (604800 секунд)
-    if 300 < time_difference:
+def is_time_valid(time_str: str) -> bool:
+    hour, minute = time_str.split(':')
+    if 0 <= int(hour) < 24 and 0 <= int(minute) < 60:
         return True
     return False
-
 
 #Проверка свободна ли дата,принимает в себя array[date,time]
 def is_data_available(dateArray):
