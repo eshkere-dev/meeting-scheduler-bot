@@ -159,9 +159,25 @@ def new_meeting(message):
 
 #Хэндлер на /delete_meeting
 #TODO: Rework delete_meeting
+def meeting_deleter(message):
+
+    meeting_url = message.text
+    if not(meeting_url.startswith("meet.jit.si/")):
+        bot.send_message(message.chat.id, "Incorrect url provided")
+
+    if db.get_meeting_creator_id == message.chat.id and db.meeting_exist_by_url(meeting_url):
+        if db.delete_meeting_by_url(meeting_url):
+            bot.send_message(message.chat.id, "Deleted succesfully")
+        else:
+            bot.send_message(message.chat.id, "Try again later")
+
+
+
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
 def cmd_delete_meeting(message):
- pass
+    bot.send_message(message.chat.id,
+                     "If you want to delete meeting, send me its url in form: meet.jit.si/example-of-meeting")
+    bot.register_next_step_handler(message, meeting_deleter)
 
 # Хэндлер на команду /my_meetings
 @bot.message_handler(commands=['my_meetings', "my_meets", "meetings"])
