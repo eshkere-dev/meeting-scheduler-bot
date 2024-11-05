@@ -145,7 +145,7 @@ def get_description(message):
             bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
                                               f"Date: {meeting_temp_dict[message.chat.id]['date']}, \n"
                                               f"Aliases of members: {aliases_string}, \n"
-                                              f"Url: {url}")
+                                              f"Url: {str(url)[8:]}")
         else:
             bot.send_message(message.chat.id, "Oops! Try again later")
 
@@ -182,9 +182,13 @@ def meeting_deleter(message):
 
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
 def cmd_delete_meeting(message):
-    bot.send_message(message.chat.id,
-                     "If you want to delete meeting, send me its url in form: meet.jit.si/example-of-meeting")
-    bot.register_next_step_handler(message, meeting_deleter)
+    meetings = db.get_users_meetings(message.from_user.username)
+    if len(meetings) == 0:
+        bot.send_message(message.chat.id, "Sorry, it seems that You do not have any meetings.")
+    else:
+        bot.send_message(message.chat.id,
+                         "If you want to delete meeting, send me its url in form: meet.jit.si/example-of-meeting")
+        bot.register_next_step_handler(message, meeting_deleter)
 
 
 # Хэндлер на команду /my_meetings
