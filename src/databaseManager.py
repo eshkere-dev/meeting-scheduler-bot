@@ -20,3 +20,5 @@ def user_exists(alias: str) -> bool:
     return True
 def delete_meeting_by_url(url: str) -> bool:
     return True
+
+def check_all_meetings():
