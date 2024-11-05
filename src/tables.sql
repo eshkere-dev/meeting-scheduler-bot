@@ -1,6 +1,6 @@
 CREATE TABLE users (
     user_id BIGINT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
+    alias VARCHAR(255) NOT NULL,
     date_registered BIGINT NOT NULL
 );
 

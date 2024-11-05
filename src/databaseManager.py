@@ -68,7 +68,7 @@ def add_user(id: int, alias: str) -> bool:
     alias="@"+alias
     try:
         cursor.execute(
-            "INSERT INTO users (user_id, username, date_registered) VALUES (%s, %s, %s)",
+            "INSERT INTO users (user_id, alias, date_registered) VALUES (%s, %s, %s)",
             (id, alias, datetime.now().timestamp())  # Assuming 0 for date_registered for now
         )
         conn.commit()
@@ -100,7 +100,7 @@ def user_exists(alias: str) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM users WHERE username = %s", (alias,))
+        cursor.execute("SELECT * FROM users WHERE alias = %s", (alias,))
         user = cursor.fetchone()
         return user is not None
     except Exception as e:
