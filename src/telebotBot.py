@@ -90,6 +90,7 @@ def get_aliases(message):
                 bot.send_message(message.chat.id, f"User {alias} do not exist in our base. \n"
                                                   f"Advise him to join us by using /start")
                 del meeting_temp_dict[message.chat.id]
+                bot.register_next_step_handler(message, get_aliases)
                 return
         else:
             bot.send_message(message.chat.id, "Please type usernames of the participants in following format. \n"

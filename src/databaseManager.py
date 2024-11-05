@@ -65,6 +65,7 @@ def delete_user(id: int) -> bool:
 def add_user(id: int, alias: str) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
+    alias="@"+alias
     try:
         cursor.execute(
             "INSERT INTO users (user_id, username, date_registered) VALUES (%s, %s, %s)",
