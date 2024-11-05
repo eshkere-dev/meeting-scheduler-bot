@@ -38,7 +38,7 @@ def generate_meeting_name():
         if hyphen_counter_flag % 5 == 0 and hyphen_counter_flag != 15:
             name += '-'
             hyphen_counter_flag += 1
-    if db.name_exists(name):
+    if db.meeting_url_exists("meet.jit.si" + name):
         return generate_meeting_name()
     else:
         return name
