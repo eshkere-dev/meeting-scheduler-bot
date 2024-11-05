@@ -156,7 +156,7 @@ def get_description(message):
     if len(description)>=5 and len(description) <=30:
         url = mm.create_meeting(description)
         aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
-        CreatorAlias = "@".join(meeting_temp_dict[message.chat.id]["creatorAlias"])
+        CreatorAlias = "@".join(meeting_temp_dict[message.chat.id]["СreatorAlias"])
         meeting_temp_dict[message.chat.id]["creator_id"] = db.get_id_by_alias(CreatorAlias)
         if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
                           meeting_temp_dict[message.chat.id]["aliases"],
