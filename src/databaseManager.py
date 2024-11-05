@@ -35,7 +35,7 @@ def get_users_meetings(user_id: int) -> list:
     cursor = conn.cursor()
     meetings = []
     try:
-        cursor.execute("SELECT time FROM meetings WHERE user_id = %d", (user_id,))
+        cursor.execute("SELECT time FROM meetings WHERE user_id = %s", (user_id,))
         rows = cursor.fetchall()
         meetings = [row[0] for row in rows]
         return meetings
