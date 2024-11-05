@@ -7,8 +7,9 @@ import meetingManager as mm
 
 
 import telebot
+from config.bot_config import TOKEN
 
-bot = telebot.TeleBot(token="6785842829:AAEzJjOKCXCk2DIcWCRSTCj3RNdM8UW_0yA")
+bot = telebot.TeleBot(token="TOKEN")
 meeting_temp_dict = dict()
 
 
@@ -121,7 +122,7 @@ def get_date(message):
         return
 
     if tm.is_date_valid(date) and tm.is_time_valid(time):
-        meeting_temp_dict[message.chat.id]["date"] = fullDate
+        meeting_temp_dict[message.chat.id]["date"] = tm.to_unix_from_date(" ".join(fullDate))
         bot.send_message(message.chat.id, "Now you can enter some details about your meeting. \n"
                                           "Note that details will be used in url, "
                                           "so description should be more than 5 "
@@ -149,7 +150,7 @@ def get_description(message):
                           meeting_temp_dict[message.chat.id]["description"],
                           url):
             bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
-                                              f"Date: {meeting_temp_dict[message.chat.id]['date']}, \n"
+                                              f"Date: {tm.to_date(meeting_temp_dict[message.chat.id]['date'])}, \n"
                                               f"Aliases of members: {aliases_string}, \n"
                                               f"Url: {str(url)[8:]}")
         else:
