@@ -3,7 +3,8 @@ import logging
 import datetime
 import timeManager as tm
 import databaseManager as db
-import bot_config as cfg
+# import bot_config as cfg
+import meetingManager as mm
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
@@ -11,6 +12,8 @@ from aiogram.filters.command import Command
 import telebot
 
 bot = telebot.TeleBot(token="6785842829:AAFHVBy_AOseywFfBx6uNxPdOhSHuL7frIA")
+meeting_temp_dict = dict()
+
 
 def meetings_to_str(meetings):
     meetings_str = ""
@@ -20,17 +23,19 @@ def meetings_to_str(meetings):
 
 
 def date_formatter(date_str):
-    res=[]
-    if len(date_str)==2:
-        date=date_str[0]
-        time=date_str[1]
-    if len(date_str)==1:
-        time=date_str[0]
-        date=datetime.date.now.strftime("%m-%d")
-    else: return res
+    res = []
+    if len(date_str) == 2:
+        date = date_str[0]
+        time = date_str[1]
+    if len(date_str) == 1:
+        time = date_str[0]
+        date = datetime.date.now.strftime("%m-%d")
+    else:
+        return res
     res.append(date)
     res.append(time)
     return res
+
 
 # Хэндлер на команду /start
 @bot.message_handler(commands=['start', 'reg'])
@@ -55,7 +60,6 @@ def start(message):
 #Хэндлер на команду /delete_user
 @bot.message_handler(commands=["delete_user", "unreg", "delete_registration"])
 def unreg(message):
-
     id = message.from_user.id
     alias = message.from_user.username
 
@@ -70,39 +74,95 @@ def unreg(message):
 
 
 def get_aliases(message):
-    pass
-    #TODO: CHANGE GET ALIASES METHOD l:81
+    aliases = message.text.split(" ")
+
+    #TODO: make_validity_checker for aliases
+
+    meeting_temp_dict[message.chat.id]["aliases"] = aliases
+    bot.send_message(message.chat.id, "OK! Let me know at what date do You want to meet! \n\n"
+                                      "Write it in one of the following formats: \n"
+                                      "1. Day-Month Hour:Minute \n"
+                                      "2. Hour:Minute if meeting is today\n"
+                                      "<u>Important note: "
+                                      "Meeting must be more than 5 minutes and less than 7 days farther.</u>",
+                     parse_mode="HTML")
+    bot.register_next_step_handler(message, get_date)
+    return
+
+
+def get_date(message):
+    if message.text == "/cancel":
+        del meeting_temp_dict[message.chat.id]
+        bot.send_message(message.chat.id, "Operation canceled")
+        return
+
+    date_str = message.text.split()
+    fullDate = date_formatter(date_str)
+
+    if len(fullDate) == 2:
+        date = fullDate[0]
+        time = fullDate[1]
+    else:
+        bot.send_message(message.chat.id,
+                         "Please enter time in one of the possible formats or use /cancel to cancel. "
+                         "\nUse /inst for more information")
+        bot.register_next_step_handler(message, get_date)
+        return
+
+    if tm.is_date_valid(date) and tm.is_time_valid(time):
+        meeting_temp_dict[message.chat.id]["date"] = fullDate
+        bot.send_message(message.chat.id, "Now you can enter some details about your meeting. \n"
+                                          "Note that details will be used in url, "
+                                          "so description should be more than 5 "
+                                          "and less than 30 symbols long.")
+
+        bot.register_next_step_handler(message, get_description)
+        return
+
+
+    else:
+        bot.send_message(message.chat.id, "Please enter a valid time for your meeting or use /cancel to cancel. \n"
+                                          "It must be more than 5 minutes and less than 7 days from now.")
+        bot.register_next_step_handler(message, get_date)
+        return
+
+
+def get_description(message):
+    description = message.text
+    meeting_temp_dict[message.chat.id]["description"] = description
+    url = mm.create_meeting(description)
+    aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
+    if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
+                      meeting_temp_dict[message.chat.id]["aliases"],
+                      meeting_temp_dict[message.chat.id]["details"],
+                      url):
+        bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
+                                          f"Date: {meeting_temp_dict[message.chat.id]['date']}, \n"
+                                          f"Aliases of members: {aliases_string}, \n"
+                                          f"Url: {url}")
+    else:
+        bot.send_message(message.chat.id, "Oops! Try again later")
+
+    del meeting_temp_dict[message.chat.id]
+
+
 # Хээндлер на команду /new_meeting
 @bot.message_handler(commands=["meet", "new_meeting", "create_meeting"])
 def new_meeting(message):
+    meeting_temp_dict.update({message.chat.id: {"aliases": [],
+                                                "date": [],
+                                                "description": ""}})
+    bot.send_message(message.chat.id, "Write down aliases of members you want to see on your meeting")
+    bot.register_next_step_handler(message, get_aliases)
+    return
 
-    fullDate=[]
-    bot.send_message(message.chat.id, "Write down aliases of members.")
-    bot.register_next_step_handler(message, )
-    aliases=message.text.split(" ")
-    bot.send_message(message.chat.id, "OK! Let me know at what date do You want to meet!\nWrite it in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-    date_str=message.text.split()
-    fullDate=date_formatter(date_str)
-    if len(fullDate)!=0:
-        date=fullDate[0]
-        time=fullDate[1]
-    else:
-        bot.send_message(message.chat.id, "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-    if tm.is_date_valid(date) and tm.is_time_valid(time):
-        if tm.is_data_available(fullDate):
-            bot.send_message(message.chat.id, "Enter some details about meeting.")
-            details = message.text
-            db.add_meeting(fullDate, aliases,details )
-        else:
-            bot.send_message(message.chat.id, "Sorry, this time is not available.")
-    else:
-        bot.send_message(message.chat.id, "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
 
 #Хэндлер на /delete_meeting
+#TODO: Rework delete_meeting
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
 def cmd_delete_meeting(message):
-
-    bot.send_message(message.chat.id, "Please enter a date in format Day-Month Hour-Minute or Hour-Minute if meeting is today to delete it.")
+    bot.send_message(message.chat.id,
+                     "Please enter a date in format Day-Month Hour-Minute or Hour-Minute if meeting is today to delete it.")
     fullDate = []
     date_str = message.text.split()
     fullDate = date_formatter(date_str)
@@ -111,9 +171,8 @@ def cmd_delete_meeting(message):
         date = fullDate[0]
         time = fullDate[1]
     else:
-        bot.send_message(message.chat.id, 
-            "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
-
+        bot.send_message(message.chat.id,
+                         "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
 
     if tm.is_date_valid(date) and tm.is_time_valid(time):
         if not tm.is_data_available(fullDate):
@@ -121,21 +180,22 @@ def cmd_delete_meeting(message):
         else:
             bot.send_message(message.chat.id, "Sorry, there is no such meeting.")
     else:
-        bot.send_message(message.chat.id, 
-            "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
+        bot.send_message(message.chat.id,
+                         "Please enter a valid date in format Day-Month Hour-Minute or Hour-Minute if meeting is today.")
+
 
 # Хэндлер на команду /my_meetings
-@bot.send_message(commands=['my_meetings'])
-def cmd_my_meetings(message: types.Message):
-    meetings=db.get_users_meetings(message.from_user.username)
-    if len(meetings)==0:
+@bot.send_message(commands=['my_meetings', "my_meets", "meetings"])
+def cmd_my_meetings(message):
+    meetings = db.get_users_meetings(message.from_user.username)
+    if len(meetings) == 0:
         bot.send_message(message.chat.id, "Sorry, it seems that You do not have any meetings.")
     else:
-        meetings_str=meetings_to_str(meetings)
-        bot.send_message(message.chat.id, "Here are Your meetings:\n",meetings_str)
+        meetings_str = meetings_to_str(meetings)
+        bot.send_message(message.chat.id, "Here are Your meetings:\n", meetings_str)
+
 
 bot.infinity_polling()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
