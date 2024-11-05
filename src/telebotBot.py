@@ -159,7 +159,7 @@ def get_description(message):
         if db.add_meeting(meeting_temp_dict[message.chat.id]["date"],
                           meeting_temp_dict[message.chat.id]["aliases"],
                           meeting_temp_dict[message.chat.id]["description"],
-                          url):
+                          url,meeting_temp_dict[message.chat.id]["CreatorAlias"]):
             bot.send_message(message.chat.id, f"Your meeting was successfully created. Here is some info about it: \n"
                                               f"Date: {tm.to_date(meeting_temp_dict[message.chat.id]['date'])}, \n"
                                               f"Aliases of members: {aliases_string}, \n"
