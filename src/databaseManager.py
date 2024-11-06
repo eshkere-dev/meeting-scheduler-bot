@@ -98,6 +98,9 @@ def meeting_url_exists(url: str) -> bool:
 
 # Check if user exists
 def user_exists(alias: str) -> bool:
+    if not(alias.startswith("@")):
+        alias = "@" + alias
+
     conn = get_connection()
     cursor = conn.cursor()
     try:
