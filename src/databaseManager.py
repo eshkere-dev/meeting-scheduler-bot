@@ -2,6 +2,7 @@ from datetime import datetime
 
 import psycopg2
 
+
 def get_connection():
     return psycopg2.connect(
         dbname="postgres",
@@ -11,15 +12,16 @@ def get_connection():
         port="5432"
     )
 
+
 # Add meeting
 def add_meeting(unixDate, aliases, details, url, creator_id) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
-    url=url[8:]
+    url = url[8:]
     try:
         cursor.execute(
             "INSERT INTO meetings (creator_id, aliases, time, description, link_to_meeting) VALUES (%s, %s, %s, %s, %s)",
-            (creator_id, aliases, unixDate, details, url) # TODO: add aliases column
+            (creator_id, aliases, unixDate, details, url)  # TODO: add aliases column
         )
         conn.commit()
         return True
@@ -29,6 +31,7 @@ def add_meeting(unixDate, aliases, details, url, creator_id) -> bool:
     finally:
         cursor.close()
         conn.close()
+
 
 # Get user's meetings
 def get_users_meetings(creator_id: int) -> list:
@@ -47,6 +50,7 @@ def get_users_meetings(creator_id: int) -> list:
         cursor.close()
         conn.close()
 
+
 # Delete user
 def delete_user(id: int) -> bool:
     conn = get_connection()
@@ -62,11 +66,12 @@ def delete_user(id: int) -> bool:
         cursor.close()
         conn.close()
 
+
 # Add user
 def add_user(id: int, alias: str) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
-    alias="@"+alias
+    alias = "@" + alias
     try:
         cursor.execute(
             "INSERT INTO users (user_id, alias, date_registered) VALUES (%s, %s, %s)",
@@ -80,6 +85,7 @@ def add_user(id: int, alias: str) -> bool:
     finally:
         cursor.close()
         conn.close()
+
 
 # Check if meeting URL exists
 def meeting_url_exists(url: str) -> bool:
@@ -96,6 +102,7 @@ def meeting_url_exists(url: str) -> bool:
         cursor.close()
         conn.close()
 
+
 # Check if user exists
 def user_exists(alias: str) -> bool:
     conn = get_connection()
@@ -111,6 +118,7 @@ def user_exists(alias: str) -> bool:
         cursor.close()
         conn.close()
 
+
 # Delete meeting by URL
 def delete_meeting_by_url(url: str) -> bool:
     conn = get_connection()
@@ -125,6 +133,7 @@ def delete_meeting_by_url(url: str) -> bool:
     finally:
         cursor.close()
         conn.close()
+
 
 # Get meeting creator ID
 def get_meeting_creator_id(meeting_url: str) -> int:
@@ -143,7 +152,6 @@ def get_meeting_creator_id(meeting_url: str) -> int:
 
 
 def get_id_by_alias(alias: str) -> int:
-
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -162,6 +170,11 @@ def get_id_by_alias(alias: str) -> int:
         cursor.close()
         conn.close()
 
+
 # gets not args, returns all meetings
 def get_all_meetings() -> list:
     return []
+
+
+def get_alias_by_id(id: int) -> str:
+    return ""

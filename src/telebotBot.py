@@ -240,14 +240,27 @@ def main():
 
 def passive_notifier():
    while True:
+
        rows = db.get_all_meetings()
        for row in rows:
+
+           meeting_id = row[0]
+           creator_id = row[1]
+           creator_alias = db.a
+           aliases_list = row[2]
+           time_unix = row[3]
+           description = row[4]
+           link_to_meeting = row[5]
+
            if abs(tm.date_now() - int(row[3])) < 30*60:
                 if abs(tm.date_now() - int(row[3])) < 15*60:
                     for alias in row[2]:
                         user_id = db.get_id_by_alias(alias)
-                        bot.send_message(user_id, "Looks like you have an upcoming meeting! "
-                                                  "\nHere is some info about it:")
+                        bot.send_message(user_id, f"Looks like you have an upcoming meeting! "
+                                                  f"\nHere is some info about it: "
+                                                  f"\nDate: {tm.to_date(time_unix)} "
+                                                  f"\nCreator alias: {creator_id}")
+
 
 if __name__ == "__main__":
     t_main, t_passive = Thread(target=main), Thread(target=passive_notifier)
