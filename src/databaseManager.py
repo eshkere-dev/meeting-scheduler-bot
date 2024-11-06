@@ -254,3 +254,5 @@ def mark_as_notified15(meeting_url):
     finally:
         cursor.close()
         conn.close()
+
+        
