@@ -98,7 +98,7 @@ def meeting_url_exists(url: str) -> bool:
 
 # Check if user exists
 def user_exists(alias: str) -> bool:
-    if not(alias.startswith("@")):
+    if not (alias.startswith('@')):
         alias = "@" + alias
 
     conn = get_connection()
@@ -106,14 +106,13 @@ def user_exists(alias: str) -> bool:
     try:
         cursor.execute("SELECT * FROM users WHERE alias = %s", (alias,))
         user = cursor.fetchone()
-        return bool(user)
+        return user is not None
     except Exception as e:
         print(f"Error checking user existence: {e}")
         return False
     finally:
         cursor.close()
         conn.close()
-
 # Delete meeting by URL
 def delete_meeting_by_url(url: str) -> bool:
     conn = get_connection()
