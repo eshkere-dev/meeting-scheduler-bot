@@ -9,6 +9,7 @@ import databaseManager as db
 import meetingManager as mm
 from config.bot_config import TOKEN
 
+
 bot = telebot.TeleBot(token=TOKEN)
 
 
@@ -238,7 +239,10 @@ def main():
 
 
 def passive_notifier():
-    pass
+   while True:
+       rows = db.get_all_meetings()
+       for row in rows:
+           pass #TODO : make row processor and notifier
 
 
 if __name__ == "__main__":
