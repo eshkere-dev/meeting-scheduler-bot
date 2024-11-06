@@ -247,10 +247,6 @@ def passive_notifier():
             aliases_str = str(row["aliases"]).replace("{", "")
             aliases_str = aliases_str.replace("}", "")
             aliases_list = row["aliases"].split(",")
-            print("line 252 log:")
-            print(aliases_list)
-            print(type(aliases_list))
-            print("end log")
             time_unix = row["time"]
             link_to_meeting = row["link_to_meeting"]
 
