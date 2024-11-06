@@ -1,13 +1,14 @@
-import asyncio
-import logging
 import datetime
 import telebot
 from threading import Thread
+import time
+
 
 import timeManager as tm
 import databaseManager as db
 import meetingManager as mm
 from config.bot_config import TOKEN
+
 
 
 bot = telebot.TeleBot(token=TOKEN)
@@ -244,22 +245,38 @@ def passive_notifier():
        rows = db.get_all_meetings()
        for row in rows:
 
-           meeting_id = row[0]
            creator_id = row[1]
-           creator_alias = db.a
+           creator_alias = db.get_alias_by_id(creator_id)
            aliases_list = row[2]
            time_unix = row[3]
            description = row[4]
            link_to_meeting = row[5]
 
-           if abs(tm.date_now() - int(row[3])) < 30*60:
-                if abs(tm.date_now() - int(row[3])) < 15*60:
+           if abs(tm.date_now() - int(time_unix)) < 60*60:
+                if abs(tm.date_now() - int(time_unix)) < 15*60:
                     for alias in row[2]:
                         user_id = db.get_id_by_alias(alias)
-                        bot.send_message(user_id, f"Looks like you have an upcoming meeting! "
+                        bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
                                                   f"\nHere is some info about it: "
                                                   f"\nDate: {tm.to_date(time_unix)} "
-                                                  f"\nCreator alias: {creator_id}")
+                                                  f"\nCreator: {creator_alias} "
+                                                  f"\nOther participants: {", ".join(row[2])} "
+                                                  f'\n<a href="https{link_to_meeting}">Here is the link</a>',
+                                         parse_mode="HTML")
+
+                else:
+                    for alias in row[2]:
+                        user_id = db.get_id_by_alias(alias)
+                        bot.send_message(user_id, f"Looks like you have an upcoming meeting in 60 minutes. "
+                                                  f"\nHere is some info about it: "
+                                                  f"\nDate: {tm.to_date(time_unix)} "
+                                                  f"\nCreator: {creator_alias} "
+                                                  f"\nOther participants: {", ".join(row[2])} "
+                                                  f"\nLink will be sent 15 minutes before meeting time.")
+        time.sleep(60)
+
+
+
 
 
 if __name__ == "__main__":
