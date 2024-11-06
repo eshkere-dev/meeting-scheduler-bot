@@ -23,7 +23,6 @@ def main():
 
     def send_add_notification(aliasArray, CreatorAlias: str, date: str):
         for alias in aliasArray:
-            print(alias)
             bot.send_message(db.get_id_by_alias(alias), f"You were invited to join meeting at {date} by {CreatorAlias}")
 
     def date_formatter(date_str):
@@ -257,7 +256,6 @@ def passive_notifier():
             if abs(tm.date_now() - int(time_unix)) < 60 * 60:
                 if abs(tm.date_now() - int(time_unix)) < 15 * 60:
                     for alias in aliases_list:
-                        print(alias)
                         user_id = db.get_id_by_alias(alias)
 
                         if len(str(user_id)) < 5:
@@ -267,7 +265,7 @@ def passive_notifier():
                                                   f"\nDate: {tm.to_date(int(time_unix))} "
                                                   f"\nCreator: {creator_alias} "
                                                   f"\nOther participants: {", ".join(aliases_list)} "
-                                                  f'\n<a href="https{link_to_meeting}">Here is the link</a>',
+                                                  f'\n<a href="{link_to_meeting}">Here is the link</a>',
                                          parse_mode="HTML")
                         db.mark_as_notified15(link_to_meeting)
                 else:
