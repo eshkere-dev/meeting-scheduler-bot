@@ -268,10 +268,11 @@ def passive_notifier():
                                                   f'\n<a href="https{link_to_meeting}">Here is the link</a>',
                                          parse_mode="HTML")
 
+
                 else:
                     for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
-                        bot.send_message(user_id, f"Looks like you have an upcoming meeting in 60 minutes. "
+                        bot.send_message(user_id, f"Looks like you have an upcoming meeting in less than 60 minutes. "
                                                   f"\nHere is some info about it: "
                                                   f"\nDate: {tm.to_date(time_unix)} "
                                                   f"\nCreator: {creator_alias} "

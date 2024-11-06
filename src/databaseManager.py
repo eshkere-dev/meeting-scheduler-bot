@@ -210,3 +210,11 @@ def get_all_meetings() -> list:
     finally:
         cursor.close()
         conn.close()
+
+def mark_as_notified60(meeting_url) -> None:
+
+    return
+
+def mark_as_notified615(meeting_url) -> None:
+
+    return
