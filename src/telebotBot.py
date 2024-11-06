@@ -135,7 +135,7 @@ def main():
             bot.register_next_step_handler(message, get_date)
             return
 
-        if tm.is_date_valid(date) and tm.is_time_valid(time) and tm.is_datetime_available(" ".join(fullDate)):
+        if tm.is_date_valid(date) and tm.is_time_valid(time) and tm.is_date_time_available(" ".join(fullDate)):
             meeting_temp_dict[message.chat.id]["date"] = tm.to_unix_from_date(" ".join(fullDate))
             bot.send_message(message.chat.id, "Now you can enter some details about your meeting. \n"
                                               "Note that details will be used in url, "
