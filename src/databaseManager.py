@@ -103,7 +103,7 @@ def user_exists(alias: str) -> bool:
     try:
         cursor.execute("SELECT * FROM users WHERE alias = %s", (alias,))
         user = cursor.fetchone()
-        return user is not None
+        return bool(user)
     except Exception as e:
         print(f"Error checking user existence: {e}")
         return False
@@ -210,6 +210,7 @@ def get_all_meetings() -> list:
     finally:
         cursor.close()
         conn.close()
+
 
 def mark_as_notified60(meeting_url) -> None:
 
