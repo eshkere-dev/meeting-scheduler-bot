@@ -253,22 +253,23 @@ def passive_notifier():
             time_unix = row["time"]
             link_to_meeting = row["link_to_meeting"]
 
-            if abs(tm.date_now() - int(time_unix)) < 60 * 60:
-                if abs(tm.date_now() - int(time_unix)) < 15 * 60:
-                    for alias in aliases_list:
-                        user_id = db.get_id_by_alias(alias)
+            if abs(tm.date_now() - int(time_unix)) < 15 * 60 and not(db.is_notified15(link_to_meeting)):
 
-                        if len(str(user_id)) < 5:
-                            continue
-                        bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
-                                                  f"\nHere is some info about it: "
-                                                  f"\nDate: {tm.to_date(int(time_unix))} "
-                                                  f"\nCreator: {creator_alias} "
-                                                  f"\nOther participants: {", ".join(aliases_list)} "
-                                                  f'\n<a href="{link_to_meeting}">Here is the link</a>',
-                                         parse_mode="HTML")
-                        db.mark_as_notified15(link_to_meeting)
-                else:
+                for alias in aliases_list:
+                    user_id = db.get_id_by_alias(alias)
+
+                    if len(str(user_id)) < 5:
+                        continue
+
+                    bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
+                                              f"\nHere is some info about it: "
+                                              f"\nDate: {tm.to_date(int(time_unix))} "
+                                              f"\nCreator: {creator_alias} "
+                                              f"\nOther participants: {", ".join(aliases_list)} "
+                                              f'\n<a href="{link_to_meeting}">Here is the link</a>',
+                                     parse_mode="HTML")
+                    db.mark_as_notified15(link_to_meeting)
+            if abs(tm.date_now() - int(time_unix)) < 60 * 60 and not(db.is_notified15(link_to_meeting)) and not(db.is_notified60(link_to_meeting)):
                     for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
                         if len(str(user_id)) < 5:
