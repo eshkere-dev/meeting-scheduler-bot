@@ -23,7 +23,7 @@ def meetings_to_str(meetings):
 def send_add_notification(aliasArray,CreatorAlias : str,date: str):
     for alias in aliasArray:
         print(alias)
-        bot.send_message(db.get_id_by_alias("@"+alias),f"You were invited to join meeting at {date} by {CreatorAlias}")
+        bot.send_message(db.get_id_by_alias(alias),f"You were invited to join meeting at {date} by {CreatorAlias}")
 
 def date_formatter(date_str):
     res = []
