@@ -181,8 +181,9 @@ def main():
     # Хэндлер на команду /new_meeting
     @bot.message_handler(commands=["meet", "new_meeting", "create_meeting"])
     def new_meeting(message):
-        if db.user_exists(message.from_user.username):
+        if not(db.user_exists(message.from_user.username)):
             bot.send_message(message.chat.id, "Firstly you need to register. Type /start")
+            return
 
         meeting_temp_dict.update({message.chat.id: {"aliases": [],
                                                     "date": [],
