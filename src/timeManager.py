@@ -74,3 +74,11 @@ def to_date(unix_time, date_format="%d.%m %H:%M"):
 #returns current date in unix format
 def date_now() -> int:
     return int(datetime.now().timestamp())
+
+
+def is_datetime_available(date_str: str) -> bool:
+    time = to_unix(date_str)
+    timedelta = time - date_now()
+    if time > date_now() and 300 < timedelta < 7*24*60*60:
+        return True
+    return False
