@@ -205,7 +205,8 @@ def meeting_deleter(message):
             bot.send_message(message.chat.id, "Deleted succesfully")
         else:
             bot.send_message(message.chat.id, "Try again later")
-
+    else:
+        bot.send_message(message.chat.id, "You are not allowed to use this command")
 
 
 @bot.message_handler(commands=['delete_meeting', 'unmeet'])
