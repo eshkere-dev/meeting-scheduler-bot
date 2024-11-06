@@ -202,8 +202,10 @@ def main():
     def meeting_deleter(message):
 
         meeting_url = message.text
+        print(message.text, db.get_meeting_creator_id(meeting_url), message.chat.id, db.meeting_url_exists(meeting_url), sep='\n')
         if meeting_url.startswith("https://"):
             bot.send_message(message.chat.id, "Incorrect url provided")
+            return
         elif db.get_meeting_creator_id(meeting_url) == message.chat.id and db.meeting_url_exists(meeting_url):
             if db.delete_meeting_by_url(meeting_url):
                 db.delete_meeting_by_url(meeting_url)
