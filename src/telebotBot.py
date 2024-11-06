@@ -244,7 +244,8 @@ def passive_notifier():
 
             creator_id = row["creator_id"]
             creator_alias = db.get_alias_by_id(creator_id)
-            aliases_list = row["aliases"]
+            aliases_str = row["aliases"].replace("{", "").replace("}", "")
+            aliases_list = row["aliases"].split(",")
             print("line 252 log:")
             print(aliases_list)
             print(type(aliases_list))
@@ -256,22 +257,27 @@ def passive_notifier():
                 if abs(tm.date_now() - int(time_unix)) < 15 * 60:
                     for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
+                        print(user_id)
+                        if len(str(user_id)) < 5:
+                            continue
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
                                                   f"\nHere is some info about it: "
-                                                  f"\nDate: {tm.to_date(time_unix)} "
+                                                  f"\nDate: {tm.to_date(int(time_unix))} "
                                                   f"\nCreator: {creator_alias} "
-                                                  f"\nOther participants: {", ".join(row[2])} "
+                                                  f"\nOther participants: {", ".join(aliases_list)} "
                                                   f'\n<a href="https{link_to_meeting}">Here is the link</a>',
                                          parse_mode="HTML")
                         db.mark_as_notified15(link_to_meeting)
                 else:
                     for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
+                        if len(str(user_id)) < 5:
+                            continue
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in less than 60 minutes. "
                                                   f"\nHere is some info about it: "
                                                   f"\nDate: {tm.to_date(int(time_unix))} "
                                                   f"\nCreator: {creator_alias} "
-                                                  f"\nOther participants: {", ".join(row[2])} "
+                                                  f"\nOther participants: {", ".join(aliases_list)} "
                                                   f"\nLink will be sent 15 minutes before meeting time.")
                         db.mark_as_notified60(link_to_meeting)
         time.sleep(60)

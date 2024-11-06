@@ -149,6 +149,9 @@ def get_id_by_alias(alias: str) -> int:
     conn = get_connection()
     cursor = conn.cursor()
 
+    if not(alias.startswith("@")):
+        alias = "@" + alias
+
     try:
         cursor.execute("SELECT user_id FROM users WHERE alias = %s", (alias,))
         row = cursor.fetchone()
