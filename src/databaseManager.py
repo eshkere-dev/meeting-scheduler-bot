@@ -161,3 +161,7 @@ def get_id_by_alias(alias: str) -> int:
     finally:
         cursor.close()
         conn.close()
+
+# gets not args, returns all meetings
+def get_all_meetings() -> list:
+    return []
