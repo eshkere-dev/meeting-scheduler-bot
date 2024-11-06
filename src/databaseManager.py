@@ -15,6 +15,7 @@ def get_connection():
 def add_meeting(unixDate, aliases, details, url, creator_id) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
+    url=url[8:]
     try:
         cursor.execute(
             "INSERT INTO meetings (creator_id, aliases, time, description, link_to_meeting) VALUES (%s, %s, %s, %s, %s)",
@@ -81,11 +82,11 @@ def add_user(id: int, alias: str) -> bool:
         conn.close()
 
 # Check if meeting URL exists
-def meeting_url_exists(meeting_name: str) -> bool:
+def meeting_url_exists(url: str) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM meetings WHERE link_to_meeting = %s", (meeting_name,))
+        cursor.execute("SELECT * FROM meetings WHERE link_to_meeting = %s", (url,))
         meeting = cursor.fetchone()
         return meeting is not None
     except Exception as e:
@@ -130,9 +131,9 @@ def get_meeting_creator_id(meeting_url: str) -> int:
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT creator_id FROM meetings WHERE link_to_meeting = %s", (meeting_url,))
+        cursor.execute("SELECT * FROM meetings LIMIT 1")
         result = cursor.fetchone()
-        return result[0] if result else 0
+        return result[1] if result else 0
     except Exception as e:
         print(f"Error getting meeting creator ID: {e}")
         return 0
