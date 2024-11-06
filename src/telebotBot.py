@@ -23,7 +23,6 @@ def main():
 
     def send_add_notification(aliasstring, CreatorAlias: str, date: str):
         aliasArray = aliasstring.replace(" ", "").split(",")
-        print("DIVIDER".join(aliasArray))
         for alias in aliasArray:
             bot.send_message(db.get_id_by_alias(alias),
                              f"You were invited to join meeting at {date} by {CreatorAlias}. "
@@ -158,7 +157,6 @@ def main():
         if 5 <= len(description) <= 30:
             url = mm.create_meeting(description)
             aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
-            print(aliases_string)
             CreatorAlias = meeting_temp_dict[message.chat.id]["CreatorAlias"]
             CreatorAlias = "@" + CreatorAlias
             meeting_temp_dict[message.chat.id]["creator_id"] = db.get_id_by_alias(CreatorAlias)
