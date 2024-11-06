@@ -21,9 +21,13 @@ def main():
             meetings_str += f"{tm.to_date(meeting, "%d.%m %H:%M")}\n"
         return meetings_str
 
-    def send_add_notification(aliasArray, CreatorAlias: str, date: str):
+    def send_add_notification(aliasstring, CreatorAlias: str, date: str):
+        aliasArray = aliasstring.replace(" ", "").split(",")
+        print("DIVIDER".join(aliasArray))
         for alias in aliasArray:
-            bot.send_message(db.get_id_by_alias("@"+alias), f"You were invited to join meeting at {date} by {CreatorAlias}")
+            bot.send_message(db.get_id_by_alias(alias),
+                             f"You were invited to join meeting at {date} by {CreatorAlias}. "
+                             f"\nJoin link will be sent later")
 
     def date_formatter(date_str):
         res = []
@@ -63,7 +67,7 @@ def main():
         id = message.from_user.id
         alias = message.from_user.username
 
-        if not(db.user_exists(alias)):
+        if not (db.user_exists(alias)):
             bot.send_message(message.chat.id, "You are not registered yet. Send /start to register")
             return
         else:
@@ -150,9 +154,11 @@ def main():
     def get_description(message):
         description = message.text
         meeting_temp_dict[message.chat.id]["description"] = description
-        if len(description) >= 5 and len(description) <= 30:
+
+        if 5 <= len(description) <= 30:
             url = mm.create_meeting(description)
             aliases_string = ", ".join(meeting_temp_dict[message.chat.id]["aliases"])
+            print(aliases_string)
             CreatorAlias = meeting_temp_dict[message.chat.id]["CreatorAlias"]
             CreatorAlias = "@" + CreatorAlias
             meeting_temp_dict[message.chat.id]["creator_id"] = db.get_id_by_alias(CreatorAlias)
@@ -166,7 +172,7 @@ def main():
                                  f"Date: {tm.to_date(meeting_temp_dict[message.chat.id]['date'])}, \n"
                                  f"Aliases of members: {aliases_string}, \n"
                                  f"Url: {str(url)[8:]}")
-                send_add_notification(aliases_string.split(", "), CreatorAlias,
+                send_add_notification(aliases_string, CreatorAlias,
                                       tm.to_date(meeting_temp_dict[message.chat.id]['date']))
             else:
                 bot.send_message(message.chat.id, "Oops! Try again later")
@@ -180,7 +186,7 @@ def main():
     # Хэндлер на команду /new_meeting
     @bot.message_handler(commands=["meet", "new_meeting", "create_meeting"])
     def new_meeting(message):
-        if not(db.user_exists(message.from_user.username)):
+        if not (db.user_exists(message.from_user.username)):
             bot.send_message(message.chat.id, "Firstly you need to register. Type /start")
             return
 
@@ -253,7 +259,7 @@ def passive_notifier():
             time_unix = row["time"]
             link_to_meeting = row["link_to_meeting"]
 
-            if abs(tm.date_now() - int(time_unix)) < 15 * 60 and not(db.is_notified15(link_to_meeting)):
+            if abs(tm.date_now() - int(time_unix)) < 15 * 60 and not (db.is_notified15(link_to_meeting)):
 
                 for alias in aliases_list:
                     user_id = db.get_id_by_alias(alias)
@@ -269,18 +275,19 @@ def passive_notifier():
                                               f'\n<a href="{link_to_meeting}">Here is the link</a>',
                                      parse_mode="HTML")
                     db.mark_as_notified15(link_to_meeting)
-            if abs(tm.date_now() - int(time_unix)) < 60 * 60 and not(db.is_notified15(link_to_meeting)) and not(db.is_notified60(link_to_meeting)):
-                    for alias in aliases_list:
-                        user_id = db.get_id_by_alias(alias)
-                        if len(str(user_id)) < 5:
-                            continue
-                        bot.send_message(user_id, f"Looks like you have an upcoming meeting in less than 60 minutes. "
-                                                  f"\nHere is some info about it: "
-                                                  f"\nDate: {tm.to_date(int(time_unix))} "
-                                                  f"\nCreator: {creator_alias} "
-                                                  f"\nOther participants: {", ".join(aliases_list)} "
-                                                  f"\nLink will be sent 15 minutes before meeting time.")
-                        db.mark_as_notified60(link_to_meeting)
+            if abs(tm.date_now() - int(time_unix)) < 60 * 60 and not (db.is_notified15(link_to_meeting)) and not (
+            db.is_notified60(link_to_meeting)):
+                for alias in aliases_list:
+                    user_id = db.get_id_by_alias(alias)
+                    if len(str(user_id)) < 5:
+                        continue
+                    bot.send_message(user_id, f"Looks like you have an upcoming meeting in less than 60 minutes. "
+                                              f"\nHere is some info about it: "
+                                              f"\nDate: {tm.to_date(int(time_unix))} "
+                                              f"\nCreator: {creator_alias} "
+                                              f"\nOther participants: {", ".join(aliases_list)} "
+                                              f"\nLink will be sent 15 minutes before meeting time.")
+                    db.mark_as_notified60(link_to_meeting)
         time.sleep(60)
 
 
