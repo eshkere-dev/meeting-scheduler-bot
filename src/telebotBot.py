@@ -3,13 +3,10 @@ import telebot
 from threading import Thread
 import time
 
-
 import timeManager as tm
 import databaseManager as db
 import meetingManager as mm
 from config.bot_config import TOKEN
-
-
 
 bot = telebot.TeleBot(token=TOKEN)
 
@@ -240,24 +237,24 @@ def main():
 
 
 def passive_notifier():
-   while True:
+    while True:
 
-       rows = db.get_all_meetings()
+        rows = db.get_all_meetings()
 
-       for row in rows:
+        for row in rows:
 
-           creator_id = row["creator_id"]
-           creator_alias = db.get_alias_by_id(creator_id)
-           aliases_list = row["aliases"]
-           print("line 252 log:")
-           print(aliases_list)
-           print(type(aliases_list))
-           print("end log")
-           time_unix = row["time"]
-           link_to_meeting = row["link_to_meeting"]
+            creator_id = row["creator_id"]
+            creator_alias = db.get_alias_by_id(creator_id)
+            aliases_list = row["aliases"]
+            print("line 252 log:")
+            print(aliases_list)
+            print(type(aliases_list))
+            print("end log")
+            time_unix = row["time"]
+            link_to_meeting = row["link_to_meeting"]
 
-           if abs(tm.date_now() - int(time_unix)) < 60*60:
-                if abs(tm.date_now() - int(time_unix)) < 15*60:
+            if abs(tm.date_now() - int(time_unix)) < 60 * 60:
+                if abs(tm.date_now() - int(time_unix)) < 15 * 60:
                     for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
@@ -267,8 +264,7 @@ def passive_notifier():
                                                   f"\nOther participants: {", ".join(row[2])} "
                                                   f'\n<a href="https{link_to_meeting}">Here is the link</a>',
                                          parse_mode="HTML")
-
-
+                        db.mark_as_notified15(link_to_meeting)
                 else:
                     for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
@@ -278,10 +274,8 @@ def passive_notifier():
                                                   f"\nCreator: {creator_alias} "
                                                   f"\nOther participants: {", ".join(row[2])} "
                                                   f"\nLink will be sent 15 minutes before meeting time.")
-       time.sleep(60)
-
-
-
+                        db.mark_as_notified60(link_to_meeting)
+        time.sleep(60)
 
 
 if __name__ == "__main__":
