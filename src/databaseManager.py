@@ -215,6 +215,6 @@ def mark_as_notified60(meeting_url) -> None:
 
     return
 
-def mark_as_notified615(meeting_url) -> None:
+def mark_as_notified15(meeting_url) -> None:
 
     return
