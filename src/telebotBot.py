@@ -269,7 +269,7 @@ def passive_notifier():
                         user_id = db.get_id_by_alias(alias)
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in less than 60 minutes. "
                                                   f"\nHere is some info about it: "
-                                                  f"\nDate: {tm.to_date(time_unix)} "
+                                                  f"\nDate: {tm.to_date(int(time_unix))} "
                                                   f"\nCreator: {creator_alias} "
                                                   f"\nOther participants: {", ".join(row[2])} "
                                                   f"\nLink will be sent 15 minutes before meeting time.")
