@@ -162,6 +162,33 @@ def get_id_by_alias(alias: str) -> int:
         cursor.close()
         conn.close()
 
-# gets not args, returns all meetings
+
 def get_all_meetings() -> list:
-    return []
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM meetings")
+        meetings = cursor.fetchall()
+        meetings_list = []
+
+        for meeting in meetings:
+            meeting_dict = {
+                "meeting_id": meeting[0],
+                "creator_id": meeting[1],
+                "aliases": meeting[2],
+                "time": meeting[3],
+                "description": meeting[4],
+                "link_to_meeting": meeting[5]
+            }
+            meetings_list.append(meeting_dict)
+
+        return meetings_list
+
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return []
+
+    finally:
+        cursor.close()
+        conn.close()
