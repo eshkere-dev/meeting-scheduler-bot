@@ -243,18 +243,22 @@ def passive_notifier():
    while True:
 
        rows = db.get_all_meetings()
+
        for row in rows:
 
-           creator_id = row[1]
+           creator_id = row["creator_id"]
            creator_alias = db.get_alias_by_id(creator_id)
-           aliases_list = row[2]
-           time_unix = row[3]
-           description = row[4]
-           link_to_meeting = row[5]
+           aliases_list = row["aliases"]
+           print("line 252 log:")
+           print(aliases_list)
+           print(type(aliases_list))
+           print("end log")
+           time_unix = row["time"]
+           link_to_meeting = row["link_to_meeting"]
 
            if abs(tm.date_now() - int(time_unix)) < 60*60:
                 if abs(tm.date_now() - int(time_unix)) < 15*60:
-                    for alias in row[2]:
+                    for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
                                                   f"\nHere is some info about it: "
@@ -265,7 +269,7 @@ def passive_notifier():
                                          parse_mode="HTML")
 
                 else:
-                    for alias in row[2]:
+                    for alias in aliases_list:
                         user_id = db.get_id_by_alias(alias)
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in 60 minutes. "
                                                   f"\nHere is some info about it: "
@@ -273,7 +277,7 @@ def passive_notifier():
                                                   f"\nCreator: {creator_alias} "
                                                   f"\nOther participants: {", ".join(row[2])} "
                                                   f"\nLink will be sent 15 minutes before meeting time.")
-        time.sleep(60)
+       time.sleep(60)
 
 
 
