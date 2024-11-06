@@ -169,7 +169,7 @@ def main():
                                  f"Date: {tm.to_date(meeting_temp_dict[message.chat.id]['date'])}, \n"
                                  f"Aliases of members: {aliases_string}, \n"
                                  f"Url: {str(url)[8:]}")
-                send_add_notification(aliases_string, CreatorAlias,
+                send_add_notification(aliases_string, "@"+message.from_user.username,
                                       tm.to_date(meeting_temp_dict[message.chat.id]['date']))
             else:
                 bot.send_message(message.chat.id, "Oops! Try again later")
