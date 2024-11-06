@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 import time
 
+
 #Проверка правильности ввода даты
 def is_date_valid(date_str: str) -> bool:
-    date_str= date_str.split('.')
-    day=date_str[0]
-    month=date_str[1]
+    date_str = date_str.split('.')
+    day = date_str[0]
+    month = date_str[1]
     if month in ['1', '3', '5', '7', '8', '10', '12']:
         if 0 < int(day) < 32:
             return True
@@ -28,6 +29,7 @@ def is_time_valid(time_str: str) -> bool:
     if 0 <= int(hour) < 24 and 0 <= int(minute) < 60:
         return True
     return False
+
 
 #Проверка свободна ли дата,принимает в себя array[date,time]
 def is_data_available(dateArray):
@@ -68,6 +70,7 @@ def to_date(unix_time, date_format="%d.%m %H:%M"):
     formatted_date = dt.strftime(date_format)
     return formatted_date
 
+
 #returns current date in unix format
 def date_now() -> int:
-    return 0
+    return int(datetime.now().timestamp())
