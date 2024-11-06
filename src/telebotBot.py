@@ -51,13 +51,12 @@ def main():
 
         if db.user_exists(alias):
             return
-
-        if db.add_user(id, alias):
-            bot.send_message(message.chat.id, "You have been successfully registered. "
-                                              "\nYou can remove registration by typing /unreg command")
         else:
-            bot.send_message(860597138, "register unsuccessful")
-            bot.send_message(message.chat.id, "Registration unsuccessful. Please try again later")
+            if db.add_user(id, alias):
+                bot.send_message(message.chat.id, "You have been successfully registered. "
+                                                  "\nYou can remove registration by typing /unreg command")
+            else:
+                bot.send_message(message.chat.id, "Registration unsuccessful. Please try again later")
 
     #Хэндлер на команду /delete_user
     @bot.message_handler(commands=["delete_user", "unreg", "delete_registration"])
