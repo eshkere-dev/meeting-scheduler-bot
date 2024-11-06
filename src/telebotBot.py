@@ -24,7 +24,10 @@ def main():
     def send_add_notification(aliasstring, CreatorAlias: str, date: str):
         aliasArray = aliasstring.replace(" ", "").split(",")
         for alias in aliasArray:
-            bot.send_message(db.get_id_by_alias(alias),
+            if alias==CreatorAlias:
+                continue
+            else:
+                bot.send_message(db.get_id_by_alias(alias),
                              f"You were invited to join meeting at {date} by {CreatorAlias}. "
                              f"\nJoin link will be sent later")
 
