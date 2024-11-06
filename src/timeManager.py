@@ -67,3 +67,7 @@ def to_date(unix_time, date_format="%d.%m %H:%M"):
     dt = datetime.fromtimestamp(unix_time)
     formatted_date = dt.strftime(date_format)
     return formatted_date
+
+#returns current date in unix format
+def date_now() -> int:
+    return 0
