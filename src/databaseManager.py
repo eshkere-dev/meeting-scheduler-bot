@@ -143,7 +143,6 @@ def get_meeting_creator_id(meeting_url: str) -> int:
 
 
 def get_id_by_alias(alias: str) -> int:
-
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -162,6 +161,52 @@ def get_id_by_alias(alias: str) -> int:
         cursor.close()
         conn.close()
 
-# gets not args, returns all meetings
+
+def get_alias_by_id(user_id: int) -> str:
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT alias FROM users WHERE user_id = %s", (user_id,))
+        row = cursor.fetchone()
+
+        if row is not None:
+            return row[0]
+        else:
+            return ""
+    except Exception as e:
+        print(f"Error fetching alias by user_id: {e}")
+        return ""
+    finally:
+        cursor.close()
+        conn.close()
+
 def get_all_meetings() -> list:
-    return []
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM meetings")
+        meetings = cursor.fetchall()
+        meetings_list = []
+
+        for meeting in meetings:
+            meeting_dict = {
+                "meeting_id": meeting[0],
+                "creator_id": meeting[1],
+                "aliases": meeting[2],
+                "time": meeting[3],
+                "description": meeting[4],
+                "link_to_meeting": meeting[5]
+            }
+            meetings_list.append(meeting_dict)
+
+        return meetings_list
+
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return []
+
+    finally:
+        cursor.close()
+        conn.close()
