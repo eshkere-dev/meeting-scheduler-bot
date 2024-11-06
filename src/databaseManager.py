@@ -212,10 +212,39 @@ def get_all_meetings() -> list:
         conn.close()
 
 
-def mark_as_notified60(meeting_url) -> None:
+def mark_as_notified60(meeting_url):
+    conn = get_connection()
+    cursor = conn.cursor()
+    update_query = """
+    UPDATE meetings
+    SET notified60 = TRUE
+    WHERE link_to_meeting = %s
+    """
+    try:
+        cursor.execute(update_query, (meeting_url,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error updating notified60: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
-    return
+def mark_as_notified15(meeting_url):
+    conn = get_connection()
+    cursor = conn.cursor()
 
-def mark_as_notified15(meeting_url) -> None:
-
-    return
+    update_query = """
+    UPDATE meetings
+    SET notified15 = TRUE
+    WHERE link_to_meeting = %s
+    """
+    try:
+        cursor.execute(update_query, (meeting_url,))
+        conn.commit()
+    except Exception as e:
+        print(f"Error updating notified15: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
