@@ -63,7 +63,7 @@ def main():
         id = message.from_user.id
         alias = message.from_user.username
 
-        if db.user_exists(alias):
+        if not(db.user_exists(alias)):
             bot.send_message(message.chat.id, "You are not registered yet. Send /start to register")
             return
         else:
