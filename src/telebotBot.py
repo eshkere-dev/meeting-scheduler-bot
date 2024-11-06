@@ -66,12 +66,12 @@ def main():
         if db.user_exists(alias):
             bot.send_message(message.chat.id, "You are not registered yet. Send /start to register")
             return
-
-        if db.delete_user(id):
-            bot.send_message(message.chat.id,
-                             text="You have been successfully removed from the database! \nSee you soon!")
         else:
-            bot.send_message(message.chat.id, text="Try again later")
+            if db.delete_user(id):
+                bot.send_message(message.chat.id,
+                                 text="You have been successfully removed from the database! \nSee you soon!")
+            else:
+                bot.send_message(message.chat.id, text="Try again later")
 
     def get_aliases(message):
         if message.text == "/cancel":
@@ -180,6 +180,9 @@ def main():
     # Хэндлер на команду /new_meeting
     @bot.message_handler(commands=["meet", "new_meeting", "create_meeting"])
     def new_meeting(message):
+        if db.user_exists(message.from_user.username):
+            bot.send_message(message.chat.id, "Firstly you need to register. Type /start")
+
         meeting_temp_dict.update({message.chat.id: {"aliases": [],
                                                     "date": [],
                                                     "description": ""}})
