@@ -263,7 +263,7 @@ def passive_notifier():
                                                   f"\nDate: {tm.to_date(int(time_unix))} "
                                                   f"\nCreator: {creator_alias} "
                                                   f"\nOther participants: {", ".join(aliases_list)} "
-                                                  f'\n<a href="https{link_to_meeting}">Here is the link</a>',
+                                                  f'\n<a href="{link_to_meeting}">Here is the link</a>',
                                          parse_mode="HTML")
                         db.mark_as_notified15(link_to_meeting)
                 else:
