@@ -246,7 +246,7 @@ def passive_notifier():
             creator_alias = db.get_alias_by_id(creator_id)
             aliases_str = str(row["aliases"]).replace("{", "")
             aliases_str = aliases_str.replace("}", "")
-            aliases_list = row["aliases"].split(",")
+            aliases_list = aliases_str.split(",")
             time_unix = row["time"]
             link_to_meeting = row["link_to_meeting"]
 
