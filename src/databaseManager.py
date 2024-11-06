@@ -266,9 +266,30 @@ def mark_as_notified15(meeting_url):
         cursor.close()
         conn.close()
 
-
 def is_notified60(url: str) -> bool:
-    return True
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT notified60 FROM meetings WHERE link_to_meeting = %s", (url,))
+        result = cursor.fetchone()
+        return result is not None and result[0]
+    except Exception as e:
+        print(f"Error checking notified60: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
 
 def is_notified15(url: str) -> bool:
-    return True
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT notified15 FROM meetings WHERE link_to_meeting = %s", (url,))
+        result = cursor.fetchone()
+        return result is not None and result[0]
+    except Exception as e:
+        print(f"Error checking notified15: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
