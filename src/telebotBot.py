@@ -244,7 +244,8 @@ def passive_notifier():
 
             creator_id = row["creator_id"]
             creator_alias = db.get_alias_by_id(creator_id)
-            aliases_str = row["aliases"].replace("{", "").replace("}", "")
+            aliases_str = str(row["aliases"]).replace("{", "")
+            aliases_str = aliases_str.replace("}", "")
             aliases_list = row["aliases"].split(",")
             print("line 252 log:")
             print(aliases_list)
@@ -256,8 +257,9 @@ def passive_notifier():
             if abs(tm.date_now() - int(time_unix)) < 60 * 60:
                 if abs(tm.date_now() - int(time_unix)) < 15 * 60:
                     for alias in aliases_list:
+                        print(alias)
                         user_id = db.get_id_by_alias(alias)
-                        print(user_id)
+
                         if len(str(user_id)) < 5:
                             continue
                         bot.send_message(user_id, f"Looks like you have an upcoming meeting in 15 minutes. "
